@@ -22,30 +22,32 @@ const calculateWinner = (squares) => {
 };
 
 const Board = () => {
-  let [status, setStatus] = useState();
   const [currentPlayer, setCurrentPlayer] = useState(
     Math.random() > 0.5 ? "X" : "O"
-  );
-  const [squares, setSquares] = useState(new Array(9));
+    );
+  const [status, setStatus] = useState();
   const [winner, setWinner] = useState(null);
+  const [squares, setSquares] = useState(new Array(9).fill(null));
 
   useEffect(() => {
-    let allSquaresAreFilled = squares.every((square) => {
+    const allSquaresAreFilled = squares.every((square) => {
+      console.log('all squares filled ', Boolean(square));
       return Boolean(square);
     });
-
     if (winner) {
       setStatus("Winner: " + winner);
     } else if (allSquaresAreFilled) {
+      console.log('squares ', squares)
+      console.log('square ', Boolean(squares[2]))
       setStatus("It's a Draw");
     } else {
       setStatus(`Next player: ${currentPlayer}`);
     }
-  }, [winner, currentPlayer]);
+  }, [winner, currentPlayer, squares]);
 
   let onClickSquare = (index) => {
     let newSquares = [...squares];
-    if (squares[index] === undefined && !winner) {
+    if (squares[index] === null && !winner) {
       newSquares[index] = currentPlayer;
       setCurrentPlayer((prev) => {
         if (prev === "X") {
