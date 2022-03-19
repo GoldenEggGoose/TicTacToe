@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Square from "./Square";
-
 const calculateWinner = (squares) => {
+
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -20,25 +20,24 @@ const calculateWinner = (squares) => {
   }
   return null;
 };
-
-const Board = () => {
+const Board = (props) => {
+  const { history, setHistory, winner, setWinner } = props;
   const [currentPlayer, setCurrentPlayer] = useState(
     Math.random() > 0.5 ? "X" : "O"
-    );
+  );
   const [status, setStatus] = useState();
-  const [winner, setWinner] = useState(null);
-  const [squares, setSquares] = useState(new Array(9).fill(null));
+  const squares = useMemo(
+    () => [...history[history.length - 1]?.squares],
+    [history]
+  );
 
   useEffect(() => {
     const allSquaresAreFilled = squares.every((square) => {
-      console.log('all squares filled ', Boolean(square));
       return Boolean(square);
     });
     if (winner) {
       setStatus("Winner: " + winner);
     } else if (allSquaresAreFilled) {
-      console.log('squares ', squares)
-      console.log('square ', Boolean(squares[2]))
       setStatus("It's a Draw");
     } else {
       setStatus(`Next player: ${currentPlayer}`);
@@ -55,7 +54,10 @@ const Board = () => {
         }
         return "X";
       });
-      setSquares(newSquares);
+      setHistory((prev) => {
+        const newHistory = [...prev, { squares: newSquares }];
+        return newHistory;
+      });
       setWinner(calculateWinner(newSquares));
     }
   };
